@@ -94,6 +94,23 @@ def test_division(a: Number, b: Number, expected: float) -> None:
     result = Operations.division(a, b)
     assert result == expected, f"Expected division({a}, {b}) to be {expected}, but got {result}"
 
+@pytest.mark.parametrize(
+    "a, b",
+    [
+        (1, 0),    
+        (-1, 0),   
+        (0, 0),   
+    ],
+    ids=[
+        "divide_positive_dividend_by_zero",
+        "divide_negative_dividend_by_zero",
+        "divide_zero_by_zero",
+    ]
+)
+def test_division_by_zero(a: Number, b: Number) -> None:
+    with pytest.raises(ValueError, match="Division by zero is not allowed.") as exc_info:
+        Operations.division(a, b)
+    assert str(exc_info.value) == "Division by zero is not allowed.", f"Expected ValueError with message 'Division by zero is not allowed.', but got '{str(exc_info.value)}'"
 
 
 
