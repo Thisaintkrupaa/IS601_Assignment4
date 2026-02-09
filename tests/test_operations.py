@@ -29,11 +29,70 @@ def test_addition(a: Number, b: Number, expected: Number) -> None:
      assert result == expected, f"Expected addition({a}, {b}) to be {expected}, but got {result}"
 
 
+pytest.mark.parametrize(
+    "a, b, expected",
+    [
+        (5, 3, 2),           
+        (0, 0, 0),          
+        (-5, -3, -2),        
+        (10.5, 5.5, 5.0),    
+        (-10.5, -5.5, -5.0), 
+    ],
+    ids=[
+        "subtract_smaller_positive_integer_from_larger",
+        "subtract_two_zeros",
+        "subtract_negative_integer_from_negative_integer",
+        "subtract_two_positive_floats",
+        "subtract_two_negative_floats",
+    ]
+)
 
+def test_subtraction(a: Number, b: Number, expected: Number) -> None:
+    result = Operations().subtraction(a, b)
+    assert result == expected, f"Expected subtraction({a}, {b}) to be {expected}, but got {result}"
+     
 
+@pytest.mark.parametrize(
+    "a, b, expected",
+    [
+        (2, 3, 6),          
+        (0, 10, 0),         
+        (-2, -3, 6),         
+        (2.5, 4.0, 10.0),    
+        (-2.5, 4.0, -10.0),  
+    ],
+    ids=[
+        "multiply_two_positive_integers",
+        "multiply_zero_with_positive_integer",
+        "multiply_two_negative_integers",
+        "multiply_two_positive_floats",
+        "multiply_negative_float_with_positive_float",
+    ]
+)
+def test_multiplication(a: Number, b: Number, expected: Number) -> None:
+    result = Operations.multiplication(a, b)
+    assert result == expected, f"Expected multiplication({a}, {b}) to be {expected}, but got {result}"
 
-
-
+@pytest.mark.parametrize(
+    "a, b, expected",
+    [
+        (6, 3, 2.0),           # Test dividing two positive integers
+        (-6, -3, 2.0),         # Test dividing two negative integers
+        (6.0, 3.0, 2.0),       # Test dividing two positive floats
+        (-6.0, 3.0, -2.0),     # Test dividing a negative float by a positive float
+        (0, 5, 0.0),            # Test dividing zero by a positive integer
+    ],
+    ids=[
+        "divide_two_positive_integers",
+        "divide_two_negative_integers",
+        "divide_two_positive_floats",
+        "divide_negative_float_by_positive_float",
+        "divide_zero_by_positive_integer",
+    ]
+)
+def test_division(a: Number, b: Number, expected: float) -> None:
+    result = Operations.division(a, b)
+    assert result == expected, f"Expected division({a}, {b}) to be {expected}, but got {result}"
 
 
 
