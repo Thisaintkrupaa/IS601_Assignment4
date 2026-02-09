@@ -29,14 +29,14 @@ def test_addition(a: Number, b: Number, expected: Number) -> None:
      assert result == expected, f"Expected addition({a}, {b}) to be {expected}, but got {result}"
 
 
-pytest.mark.parametrize(
+@pytest.mark.parametrize(
     "a, b, expected",
     [
-        (5, 3, 2),           
-        (0, 0, 0),          
-        (-5, -3, -2),        
-        (10.5, 5.5, 5.0),    
-        (-10.5, -5.5, -5.0), 
+        (5, 3, 2),
+        (0, 0, 0),
+        (-5, -3, -2),
+        (10.5, 5.5, 5.0),
+        (-10.5, -5.5, -5.0),
     ],
     ids=[
         "subtract_smaller_positive_integer_from_larger",
@@ -46,9 +46,8 @@ pytest.mark.parametrize(
         "subtract_two_negative_floats",
     ]
 )
-
 def test_subtraction(a: Number, b: Number, expected: Number) -> None:
-    result = Operations().subtraction(a, b)
+    result = Operations.subtraction(a, b)
     assert result == expected, f"Expected subtraction({a}, {b}) to be {expected}, but got {result}"
      
 
