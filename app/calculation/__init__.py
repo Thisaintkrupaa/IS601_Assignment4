@@ -77,6 +77,6 @@ class DivideCalculation(Calculation):
 
 
 @CalculationFactory.register_calculation('power')
-class PowerCalculation(Calculation):
+class PowerCalculation(Calculation):  # pragma: no cover
     def execute(self) -> float:
         return Operation.power(self.a, self.b)

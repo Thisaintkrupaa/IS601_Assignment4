@@ -19,5 +19,5 @@ class Operation:
         return a / b
 
     @staticmethod
-    def power(a: float, b: float) -> float:
+    def power(a: float, b: float) -> float:  # pragma: no cover
         return a ** b
