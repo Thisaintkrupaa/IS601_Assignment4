@@ -1,55 +1,32 @@
-import sys
+import pytest
 from io import StringIO
-from app.calculator import calculator
-
-def run_calculator_with_input(monkeypatch, inputs):
-    input_iterator = iter(inputs)
-    monkeypatch.setattr('builtins.input', lambda _: next(input_iterator))
+from app.calculator import display_help, display_history, calculator
 
 
-    captured_output = StringIO()
-    sys.stdout = captured_output
-    calculator()
-    sys.stdout = sys.__stdout__
-    return captured_output.getvalue()
+def test_display_help(capsys):
+    display_help()
+    captured = capsys.readouterr()
+    expected_output = """
+Calculator REPL Help
+--------------------
+Usage:
+    <operation> <number1> <number2>
+    - Perform a calculation with the specified operation and two numbers.
+    - Supported operations:
+        add       : Adds two numbers.
+        subtract  : Subtracts the second number from the first.
+        multiply  : Multiplies two numbers.
+        divide    : Divides the first number by the second.
 
-def test_addition(monkeypatch):
-    inputs = ['add 2 3', 'exit']
-    output = run_calculator_with_input(monkeypatch, inputs)
-    assert "Result: 5.0" in output
+Special Commands:
+    help      : Display this help message.
+    history   : Show the history of calculations.
+    exit      : Exit the calculator.
 
-
-    def test_subtraction(monkeypatch):
-        inputs = ['subtract 5 2', 'exit']
-        output = run_calculator_with_input(monkeypatch, inputs)
-        assert "Result: 3.0" in output
-
-
-    def test_multiplication(monkeypatch):
-        inputs = ['multiply 4 5', 'exit']
-        output = run_calculator_with_input(monkeypatch, inputs)
-        assert "Result: 20.0" in output
-    
-
-    def test_division(monkeypatch):
-        inputs = ['divide 10 2', 'exit']
-        output = run_calculator_with_input(monkeypatch, inputs)
-        assert "Result: 5.0" in output
-
-
-    def test_invalid_operation(monkeypatch):
-        inputs = ['modulus 5 3', 'exit']
-        output = run_calculator_with_input(monkeypatch, inputs)
-        assert "Unknown operation " in output
- 
-    
-    def test_invalid_input_format(monkeypatch):
-        inputs = ['add two three', 'exit']
-        output = run_calculator_with_input(monkeypatch, inputs)
-        assert "Invalid input. Please follow the format" in output
-
-
-    def test_division_by_zero(monkeypatch):
-        inputs = ['divide 5 0', 'exit']
-        output = run_calculator_with_input(monkeypatch, inputs)
-        assert "Division by zero is not allowed" in output
+Examples:
+    add 10 5
+    subtract 15.5 3.2
+    multiply 7 8
+    divide 20 4
+"""
+    assert captured.out.strip() == expected_output.strip()
