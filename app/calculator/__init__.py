@@ -1,82 +1,111 @@
-from abc import ABC, abstractmethod
-from app.operations import Operation
+import sys
+import readline
+from typing import List
+from app.calculation import Calculation, CalculationFactory
 
 
-class Calculation(ABC):
-    def __init__(self, a: float, b: float) -> None:
-        self.a: float = a
-        self.b: float = b
+def display_help() -> None:
+    help_message = """
+Calculator REPL Help
+--------------------
+Usage:
+    <operation> <number1> <number2>
 
-    @abstractmethod
-    def execute(self) -> float:
-        pass  # pragma: no cover
+Supported operations:
+    add
+    subtract
+    multiply
+    divide
+    power
 
-    def __str__(self) -> str:
-        result = self.execute()
-        operation_name = self.__class__.__name__.replace('Calculation', '')
-        return f"{self.__class__.__name__}: {self.a} {operation_name} {self.b} = {result}"
+Special Commands:
+    help
+    history
+    exit
 
-    def __repr__(self) -> str:
-        return f"{self.__class__.__name__}(a={self.a}, b={self.b})"
-
-
-class CalculationFactory:
-    _calculations = {}
-
-    @classmethod
-    def register_calculation(cls, calculation_type: str):
-        def decorator(subclass):
-            calculation_type_lower = calculation_type.lower()
-            if calculation_type_lower in cls._calculations:
-                raise ValueError(
-                    f"Calculation type '{calculation_type}' is already registered."
-                )
-            cls._calculations[calculation_type_lower] = subclass
-            return subclass
-        return decorator
-
-    @classmethod
-    def create_calculation(cls, calculation_type: str, a: float, b: float) -> Calculation:
-        calculation_type_lower = calculation_type.lower()
-        calculation_class = cls._calculations.get(calculation_type_lower)
-
-        if not calculation_class:
-            available_types = ', '.join(cls._calculations.keys())
-            raise ValueError(
-                f"Unsupported calculation type: '{calculation_type}'. "
-                f"Available types: {available_types}"
-            )
-
-        return calculation_class(a, b)
+Examples:
+    add 10 5
+    subtract 15.5 3.2
+    multiply 7 8
+    divide 20 4
+    power 2 3
+    """
+    print(help_message)
 
 
-@CalculationFactory.register_calculation('add')
-class AddCalculation(Calculation):
-    def execute(self) -> float:
-        return Operation.addition(self.a, self.b)
+def display_history(history: List[Calculation]) -> None:
+    if not history:
+        print("No calculations performed yet.")
+    else:
+        print("Calculation History:")
+        for idx, calculation in enumerate(history, start=1):
+            print(f"{idx}. {calculation}")
 
 
-@CalculationFactory.register_calculation('subtract')
-class SubtractCalculation(Calculation):
-    def execute(self) -> float:
-        return Operation.subtraction(self.a, self.b)
+def calculator() -> None:
+    history: List[Calculation] = []
+
+    print("Welcome to the Professional Calculator REPL!")
+    print("Type 'help' for instructions or 'exit' to quit.\n")
+
+    while True:
+        try:
+            user_input: str = input(">> ").strip()
+
+            if not user_input:
+                continue
+
+            command = user_input.lower()
+
+            if command == "help":
+                display_help()
+                continue
+            elif command == "history":
+                display_history(history)
+                continue
+            elif command == "exit":
+                print("Exiting calculator. Goodbye!\n")
+                sys.exit(0)
+
+            try:
+                operation, num1_str, num2_str = user_input.split()
+                num1: float = float(num1_str)
+                num2: float = float(num2_str)
+            except ValueError:
+                print("Invalid input. Please follow the format: <operation> <num1> <num2>")
+                print("Type 'help' for more information.\n")
+                continue
+
+            try:
+                calculation = CalculationFactory.create_calculation(operation, num1, num2)
+            except ValueError as ve:
+                print(ve)
+                print("Type 'help' to see the list of supported operations.\n")
+                continue
+
+            try:
+                result = calculation.execute()
+            except ZeroDivisionError:
+                print("Cannot divide by zero.")
+                print("Please enter a non-zero divisor.\n")
+                continue
+            except Exception as e:
+                print(f"An error occurred during calculation: {e}")
+                print("Please try again.\n")
+                continue
+
+            result_str: str = f"{calculation}"
+            print(f"Result: {result_str}\n")
+
+            history.append(calculation)
+
+        except KeyboardInterrupt:
+            print("\nKeyboard interrupt detected. Exiting calculator. Goodbye!")
+            sys.exit(0)
+        except EOFError:
+            print("\nEOF detected. Exiting calculator. Goodbye!")
+            sys.exit(0)
 
 
-@CalculationFactory.register_calculation('multiply')
-class MultiplyCalculation(Calculation):
-    def execute(self) -> float:
-        return Operation.multiplication(self.a, self.b)
-
-
-@CalculationFactory.register_calculation('divide')
-class DivideCalculation(Calculation):
-    def execute(self) -> float:
-        if self.b == 0:
-            raise ZeroDivisionError("Cannot divide by zero.")
-        return Operation.division(self.a, self.b)
-
-
-@CalculationFactory.register_calculation('power')
-class PowerCalculation(Calculation):
-    def execute(self) -> float:
-        return Operation.power(self.a, self.b)
+if __name__ == "__main__":
+    calculator()
