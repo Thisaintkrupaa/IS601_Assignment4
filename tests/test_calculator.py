@@ -53,3 +53,27 @@ def test_display_history_with_entries(capsys):
 3. MultiplyCalculation: 7.0 Multiply 8.0 = 56.0
 4. DivideCalculation: 20.0 Divide 4.0 = 5.0"""
     assert captured.out.strip() == expected_output.strip()
+
+def test_calculator_exit(monkeypatch, capsys):
+    user_input = 'exit\n'
+    monkeypatch.setattr('sys.stdin', StringIO(user_input))
+
+    with pytest.raises(SystemExit) as exc_info:
+        calculator()
+
+    captured = capsys.readouterr()
+    assert "Exiting calculator. Goodbye!" in captured.out
+    assert exc_info.type == SystemExit
+    assert exc_info.value.code == 0
+
+
+def test_calculator_help_command(monkeypatch, capsys):
+    user_input = 'help\nexit\n'
+    monkeypatch.setattr('sys.stdin', StringIO(user_input))
+
+    with pytest.raises(SystemExit):
+        calculator()
+
+    captured = capsys.readouterr()
+    assert "Calculator REPL Help" in captured.out
+    assert "Exiting calculator. Goodbye!" in captured.out
